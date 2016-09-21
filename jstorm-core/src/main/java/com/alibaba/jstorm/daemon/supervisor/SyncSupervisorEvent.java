@@ -131,6 +131,7 @@ class SyncSupervisorEvent extends RunnableCallback {
                 assignments.clear();
                 LOG.warn("Supervisor Machine Check Status :" + checkStatus.getType() +", so kill all workers.");
             } else {
+                // 获取ZK中所有的任务分配与本地比较确定最新任务列表
                 getAllAssignments(assignmentVersion, assignments, syncCallback);
             }
             LOG.debug("Get all assignments " + assignments);
@@ -598,7 +599,7 @@ class SyncSupervisorEvent extends RunnableCallback {
         Map<String, Assignment> ret = new HashMap<String, Assignment>();
         Map<String, Integer> updateAssignmentVersion = new HashMap<String, Integer>();
 
-        // get /assignments {topology_id}
+        // get /assignments/ 获取所有分配
         List<String> assignments = stormClusterState.assignments(callback);
         if (assignments == null) {
             assignmentVersion.clear();
@@ -608,12 +609,13 @@ class SyncSupervisorEvent extends RunnableCallback {
         }
 
         for (String topology_id : assignments) {
-
+            // /storm-dir/assignments/topology_id节点
             Integer zkVersion = stormClusterState.assignment_version(topology_id, callback);
             LOG.debug(topology_id + "'s assigment version of zk is :" + zkVersion);
             Integer recordedVersion = assignmentVersion.get(topology_id);
             LOG.debug(topology_id + "'s assigment version of local is :" + recordedVersion);
 
+            //通过比较本地与ZK版本号确定最新的分配
             Assignment assignment = null;
             if (recordedVersion !=null && zkVersion !=null && recordedVersion.equals(zkVersion)) {
                 assignment = localZkAssignments.get(topology_id);

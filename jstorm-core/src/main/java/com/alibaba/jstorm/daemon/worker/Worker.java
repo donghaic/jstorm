@@ -172,6 +172,7 @@ public class Worker {
     public WorkerShutdown execute() throws Exception {
         List<AsyncLoopThread> threads = new ArrayList<AsyncLoopThread>();
 
+        // 启动网络监听线程，负责接收其他Worker发送到本worker中相应task的消息
         // create recv connection
         AsyncLoopThread controlRvthread = startDispatchThread();
         threads.add(controlRvthread);
@@ -179,6 +180,7 @@ public class Worker {
         // create client before create task
         // so create client connection before create task
         // refresh connection
+        // 刷新本worker到其他worker的网络连接
         RefreshConnections refreshConn = makeRefreshConnections();
         AsyncLoopThread refreshconn = new AsyncLoopThread(refreshConn, false, Thread.MIN_PRIORITY, true);
         threads.add(refreshconn);
@@ -214,7 +216,7 @@ public class Worker {
         AsyncLoopThread hb = new AsyncLoopThread(heartbeat_fn, false, null, Thread.NORM_PRIORITY, true);
         threads.add(hb);
 
-        // shutdown task callbacks
+        // shutdown task callbacks  启动task 处理任务
         List<TaskShutdownDameon> shutdowntasks = createTasks();
         workerData.setShutdownTasks(shutdowntasks);
 

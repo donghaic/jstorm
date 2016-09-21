@@ -38,7 +38,7 @@ import com.alibaba.jstorm.utils.JStormUtils;
 import com.alibaba.jstorm.utils.TimeUtils;
 
 /**
- * worker Heartbeat
+ * worker Heartbeat 是通过写本地文件 /storm/workers/[worker-id]/heartbeats文件
  * 
  * @author yannian/Longda
  * 

@@ -72,6 +72,7 @@ public class AsyncLoopThread implements SmartThread {
             kill_fn = new AsyncLoopDefaultKill();
         }
 
+        // while(true) looop
         Runnable runable = new AsyncLoopRunnable(afn, kill_fn);
         thread = new Thread(runable);
         String threadName = afn.getThreadName();

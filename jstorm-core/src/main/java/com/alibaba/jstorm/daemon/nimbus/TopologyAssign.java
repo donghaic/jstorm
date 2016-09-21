@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -141,7 +141,7 @@ public class TopologyAssign implements Runnable {
 
     /**
      * Create/Update topology assignment set topology status
-     * 
+     *
      * @param event
      * @return
      */
@@ -194,7 +194,7 @@ public class TopologyAssign implements Runnable {
 
     /**
      * cleanup the topologies which are not in ZK /topology, but in other place
-     * 
+     *
      * @throws Exception
      */
     public void cleanupDisappearedTopology() throws Exception {
@@ -257,7 +257,7 @@ public class TopologyAssign implements Runnable {
 
     /**
      * get topology ids which need to be cleanup
-     * 
+     *
      * @param clusterState
      * @return
      * @throws Exception
@@ -319,7 +319,7 @@ public class TopologyAssign implements Runnable {
 
         /**
          * Why need to remove latest code. Due to competition between Thrift.threads and TopologyAssign thread
-         * 
+         *
          */
         to_cleanup_ids.removeAll(latest_code_ids);
         LOG.info("Skip remove topology of " + latest_code_ids);
@@ -392,7 +392,8 @@ public class TopologyAssign implements Runnable {
         // zk数据操作入口
         StormClusterState stormClusterState = nimbusData.getStormClusterState();
 
-        // 当前在线的supervisor
+        // 通过读取/ZK/supervisors下节点数据获取当前在线的supervisor，
+        // supervisor通过heartbeat更新ZK中/ZK/supervisors/[supervisor-id]
         // get all running supervisor, don't need callback to watch supervisor
         Map<String, SupervisorInfo> supInfos = Cluster.get_all_SupervisorInfo(stormClusterState, null);
         // init all AvailableWorkerPorts 每个supervisor管理的空闲worker
@@ -490,7 +491,7 @@ public class TopologyAssign implements Runnable {
 
     /**
      * make assignments for a topology The nimbus core function, this function has been totally rewrite
-     * 
+     *
      * @throws Exception
      */
     public Assignment mkAssignment(TopologyAssignEvent event) throws Exception {
@@ -525,7 +526,7 @@ public class TopologyAssign implements Runnable {
             assignment = new Assignment(codeDir, assignments, nodeHost, startTimes);
 
             //  the topology binary changed.
-            if (event.isScaleTopology()){
+            if (event.isScaleTopology()) {
                 assignment.setAssignmentType(Assignment.AssignmentType.ScaleTopology);
             }
             StormClusterState stormClusterState = nimbusData.getStormClusterState();
@@ -582,7 +583,7 @@ public class TopologyAssign implements Runnable {
     }
 
     public static Map<Integer, Integer> getTaskStartTimes(TopologyAssignContext context, NimbusData nimbusData, String topologyId,
-            Assignment existingAssignment, Set<ResourceWorkerSlot> workers) throws Exception {
+                                                          Assignment existingAssignment, Set<ResourceWorkerSlot> workers) throws Exception {
 
         Map<Integer, Integer> startTimes = new TreeMap<Integer, Integer>();
 
@@ -629,7 +630,7 @@ public class TopologyAssign implements Runnable {
     }
 
     public static Map<String, String> getTopologyNodeHost(Map<String, SupervisorInfo> supervisorMap, Assignment existingAssignment,
-            Set<ResourceWorkerSlot> workers) {
+                                                          Set<ResourceWorkerSlot> workers) {
 
         // the following is that remove unused node from allNodeHost
         Set<String> usedNodes = new HashSet<String>();
@@ -666,7 +667,7 @@ public class TopologyAssign implements Runnable {
 
     /**
      * get all taskids which are assigned newly or reassigned
-     * 
+     *
      * @return Set<Integer> taskid which is assigned newly or reassigned
      */
     public static Set<Integer> getNewOrChangedTaskIds(Set<ResourceWorkerSlot> oldWorkers, Set<ResourceWorkerSlot> workers) {
@@ -721,7 +722,7 @@ public class TopologyAssign implements Runnable {
 
     /**
      * sort slots, the purpose is to ensure that the tasks are assigned in balancing
-     * 
+     *
      * @param allSlots
      * @return List<WorkerSlot>
      */
@@ -834,7 +835,7 @@ public class TopologyAssign implements Runnable {
 
     /**
      * Get free resources
-     * 
+     *
      * @param supervisorInfos
      * @param stormClusterState
      * @throws Exception
@@ -865,7 +866,7 @@ public class TopologyAssign implements Runnable {
     /**
      * find all alived taskid Does not assume that clocks are synchronized. Task heartbeat is only used so that nimbus knows when it's received a new heartbeat.
      * All timing is done by nimbus and tracked through task-heartbeat-cache
-     * 
+     *
      * @return Set<Integer> : taskid
      * @throws Exception
      */
@@ -888,7 +889,7 @@ public class TopologyAssign implements Runnable {
 
     /**
      * Backup the toplogy's Assignment to ZK
-     * 
+     *
      * @param assignment
      * @param event
      * @@@ Question Do we need to do backup operation every time?

@@ -172,7 +172,11 @@ public class Supervisor {
         // 同步 syncFrequence间隔 任务的线程,
         int syncFrequence = JStormUtils.parseInt(conf.get(Config.SUPERVISOR_MONITOR_FREQUENCY_SECS));
         // EventManagerPusher --> syncSupervisorEvent --> syncSupEventManager ->
+
         EventManagerPusher syncSupervisorPusher = new EventManagerPusher(syncSupEventManager, syncSupervisorEvent, syncFrequence);
+        // 定时同步线程 syncSupEventManager.add(syncSupervisorEvent);
+        // 定时线程 syncSupEventThread 从syncSupEventManager取出SyncSupervisorEvent运行run()
+        // 这样做到实现同步分配的任务
         AsyncLoopThread syncSupervisorThread = new AsyncLoopThread(syncSupervisorPusher);
         threads.add(syncSupervisorThread);
 

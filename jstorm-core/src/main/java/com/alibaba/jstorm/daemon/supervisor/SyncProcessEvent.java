@@ -256,6 +256,8 @@ class SyncProcessEvent extends ShutdownWork {
         for (Entry<String, Pair<Integer, Integer>> entry : workerIdToStartTimeAndPort.entrySet()) {
             String workerId = entry.getKey();
             int startTime = entry.getValue().getFirst();
+
+            // worker会将心跳写入 /storm/workers/[worker-id]/heartbeats文件
             LocalState ls = StormConfig.worker_state(conf, workerId);
             WorkerHeartbeat whb = (WorkerHeartbeat) ls.get(Common.LS_WORKER_HEARTBEAT);
             if (whb == null) {
@@ -295,6 +297,7 @@ class SyncProcessEvent extends ShutdownWork {
 
         /**
          * Get Map<workerId, WorkerHeartbeat> from local_dir/worker/ids/heartbeat
+         * 读取当前superviser下所有worker的心跳文件 local_dir/worker/ids/heartbeat
          */
         Map<String, WorkerHeartbeat> idToHeartbeat = readWorkerHeartbeats(conf);
         for (Map.Entry<String, WorkerHeartbeat> entry : idToHeartbeat.entrySet()) {
